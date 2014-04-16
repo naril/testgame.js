@@ -21,7 +21,7 @@ backgroundImage.onload = function () {
 };
 
 shipImage.src = "img/ship.png";
-bulletImage.src = "img/bullet.jpg";
+bulletImage.src = "img/bullet.png";
 backgroundImage.src = "img/back.png";
 
 ship.x = (canvas.width / 2) - shipImage.width;
