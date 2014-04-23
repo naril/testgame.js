@@ -6,13 +6,16 @@ function Enemy () {
 //modul depends on bullet modul
 	this.x = 0;
 	this.y = 0;
-	this.speed = 256;
+	this.speed = 350;
 	
 	//static variables
 	do {		
 		var repeat = false;
-		this.x = Math.floor((Math.random()*canvas.width)+1-Enemy.image.width);
-	
+		
+		do{
+			this.x = Math.floor((Math.random()*canvas.width)+1-Enemy.image.width);
+		}while(this.x > canvas.width || this.x < 0);
+
 		for(enemy in Enemy.enemyList) {
 			if(colide(this.x, this.y, Enemy.image.width,  Enemy.image.height, Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y, Enemy.image.width, Enemy.image.height)) {
 				repeat = true;
@@ -21,7 +24,7 @@ function Enemy () {
 		}
 	} while(repeat);
 
-	if(Enemy.enemyCounter < 5 && Enemy.enemyCounter >= 0) {
+	if(Enemy.enemyCounter < 6 && Enemy.enemyCounter >= 0) {
 		Enemy.enemyList.push(this);
 		Enemy.enemyCounter++;
 	}
@@ -55,17 +58,24 @@ Enemy.update = function (modifier) {
 	if(Enemy.enemyCounter > 0)
 	{
 		for (enemy in Enemy.enemyList) {	
+ 			if(Enemy.enemyList[enemy].y > canvas.height)
+			{
+				Enemy.enemyList[enemy].destroy();
+				continue;
+			}
+
  			Enemy.enemyList[enemy].y += Enemy.enemyList[enemy].speed * modifier;
 			for(bullet in Bullet.bulletList) {
 				if(colide(Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y, Enemy.image.width, Enemy.image.height, Bullet.bulletList[bullet].x, Bullet.bulletList[bullet].y, Bullet.image.width, Bullet.image.height)) {
+					new	Explosion(Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y);			
 					Enemy.enemyList[enemy].destroy();
-					Bullet.bulletList[bullet].destroy();			
+					Bullet.bulletList[bullet].destroy();
+					Bullet.counter--;
+					Player.score++;
 					break;
 				}				
 			} 
   	
-			if(Enemy.enemyList[enemy].y > canvas.height) 
-				Enemy.enemyList[enemy].destroy();
 		}
 	}
 };

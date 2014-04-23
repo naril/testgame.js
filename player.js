@@ -1,9 +1,10 @@
 // JavaScript Document
 function Player () {
-	this.speed = 512; // movement in pixels per second
+	this.speed = 350; // movement in pixels per second
 	this.x = 0;
 	this.y = 0;
 	this.lives = 3;
+	this.amo = 1;
 
 	this.x = (canvas.width / 2) - Player.image.width;
 	this.y = (canvas.height / 2) - Player.image.height;
@@ -31,7 +32,7 @@ Player.image.onload = function () {
 Player.image.src = "img/ship.png";
 Player.keysDown = {};
 Player.keysPress = {};
-
+Player.score = 0;
 
 Player.prototype.render = function () {
 		
@@ -69,7 +70,10 @@ Player.prototype.update = function (modifier) {
   	}
   
 	if(32 in Player.keysPress) {
-    	Bullet.bulletList.push(new Bullet(this.x+(Player.image.width/2)-Bullet.image.width/2, this.y));
+		if(Bullet.counter < playerInstance.amo){
+			Bullet.bulletList.push(new Bullet(this.x+(Player.image.width/2)-Bullet.image.width/2, this.y));
+			Bullet.counter++;
+		}
     	delete Player.keysPress[32];
 	}
 
@@ -77,6 +81,8 @@ Player.prototype.update = function (modifier) {
 	{
 		if(colide(this.x, this.y, Player.image.width, Player.image.height, Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y, Enemy.image.width, Enemy.image.height)) {
 			this.lives--;
+			new	Explosion(Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y);
+			Player.score++;
 			Enemy.enemyList[enemy].destroy();
 			break;
 		}

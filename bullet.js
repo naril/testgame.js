@@ -2,7 +2,7 @@
 function Bullet(x,y) {
 	this.x = x;
 	this.y = y;
-	this.speed = 512;
+	this.speed = 256;
 
 	this.destroy = function () {
 		Bullet.bulletList.splice(Bullet.bulletList.indexOf(this),1);
@@ -16,6 +16,7 @@ Bullet.image.onload = function () {
 	Bullet.ready = true;
 };
 Bullet.image.src = "img/bullet.png";
+Bullet.counter = 0;
 
 Bullet.render = function () {
 		if(Bullet.ready) {
@@ -29,7 +30,10 @@ Bullet.update = function (modifier) {
 			for(bullet in Bullet.bulletList){
 	    		Bullet.bulletList[bullet].y -= Bullet.bulletList[bullet].speed * modifier;
 	    		if(Bullet.bulletList[bullet].y < 0)
+	    		{
 	      			Bullet.bulletList[bullet].destroy();
+					Bullet.counter--;
+				}
 			}
 		}
 };
