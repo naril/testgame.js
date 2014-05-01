@@ -8,7 +8,7 @@ backgroundImage.onload = function () {
     backReady = true;
 };
 
-backgroundImage.src = "img/back.png";
+backgroundImage.src = "img/bg1.png";
 
 function colide(x,y,xW,yH, x2, y2, x2w, y2h) {
 	if (x < x2 + x2w  && x + xW  > x2 && y < y2 + y2h && y + yH > y2)	

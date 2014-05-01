@@ -71,7 +71,7 @@ Player.prototype.update = function (modifier) {
   
 	if(32 in Player.keysPress) {
 		if(Bullet.counter < playerInstance.amo){
-			Bullet.bulletList.push(new Bullet(this.x+(Player.image.width/2)-Bullet.image.width/2, this.y));
+			Bullet.bulletList.push(new Bullet(this.x+(Player.image.width/2)-Bullet.image.width/2, this.y, 256, 0));
 			Bullet.counter++;
 		}
     	delete Player.keysPress[32];
@@ -86,6 +86,19 @@ Player.prototype.update = function (modifier) {
 			Enemy.enemyList[enemy].destroy();
 			break;
 		}
+	}
+
+	for(bullet in Bullet.bulletList)
+	{
+		if(Bullet.bulletList[bullet].enemy)
+		{
+			if(colide(this.x, this.y, Player.image.width, Player.image.height, Bullet.bulletList[bullet].x, Bullet.bulletList[bullet].y, Bullet.image2.width, Bullet.image2.height))
+			{
+				Bullet.bulletList[bullet].destroy();
+				new	Explosion(this.x, this.y);
+				this.lives--;
+			}
+		}	
 	}
 
 	if(this.lives <= 0)

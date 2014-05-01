@@ -58,6 +58,8 @@ Enemy.update = function (modifier) {
 	if(Enemy.enemyCounter > 0)
 	{
 		for (enemy in Enemy.enemyList) {	
+ 			if(Math.floor(Math.random()*500) === 5)
+ 				Bullet.bulletList.push(new Bullet(Enemy.enemyList[enemy].x+Enemy.image.width/2-Bullet.image.width/2, Enemy.enemyList[enemy].y, -300, 1));
  			if(Enemy.enemyList[enemy].y > canvas.height)
 			{
 				Enemy.enemyList[enemy].destroy();
@@ -66,14 +68,18 @@ Enemy.update = function (modifier) {
 
  			Enemy.enemyList[enemy].y += Enemy.enemyList[enemy].speed * modifier;
 			for(bullet in Bullet.bulletList) {
-				if(colide(Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y, Enemy.image.width, Enemy.image.height, Bullet.bulletList[bullet].x, Bullet.bulletList[bullet].y, Bullet.image.width, Bullet.image.height)) {
-					new	Explosion(Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y);			
-					Enemy.enemyList[enemy].destroy();
-					Bullet.bulletList[bullet].destroy();
-					Bullet.counter--;
-					Player.score++;
-					break;
-				}				
+				if(!Bullet.bulletList[bullet].enemy){
+					if(colide(Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y, Enemy.image.width, Enemy.image.height, Bullet.bulletList[bullet].x, Bullet.bulletList[bullet].y, Bullet.image.width, Bullet.image.height)) { 
+						new	Explosion(Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y);
+						if(Math.floor(Math.random()*3) === 1)
+							new powerUp(Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y);			
+						Enemy.enemyList[enemy].destroy();
+						Bullet.bulletList[bullet].destroy();
+						Bullet.counter--;
+						Player.score++;
+						break;	
+				}
+			}				
 			} 
   	
 		}
