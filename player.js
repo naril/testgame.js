@@ -5,8 +5,10 @@ function Player () {
 	this.y = 0;
 	this.lives = 3;
 	this.amo = 1;
+	this.pos = Player.spriteBasePos;
+	this.ticks = 0;
 
-	this.x = (canvas.width / 2) - Player.image.width;
+	this.x = (canvas.width / 2) - Player.image.width/Player.sprites;
 	this.y = (canvas.height / 2) - Player.image.height;
 
 	addEventListener("keydown", function (e) {
@@ -29,7 +31,10 @@ Player.ready =  false;
 Player.image.onload = function () {
 	Player.ready = true;
 };
-Player.image.src = "img/ship.png";
+Player.imagePerFrame = 24;
+Player.image.src = "img/ship_sprite.png";
+Player.sprites = 5;
+Player.spriteBasePos = 2;
 Player.keysDown = {};
 Player.keysPress = {};
 Player.score = 0;
@@ -37,8 +42,8 @@ Player.score = 0;
 Player.prototype.render = function () {
 		
 		if (Player.ready) 
-    		ctx.drawImage(Player.image, this.x, this.y);
-	};
+    		ctx.drawImage(Player.image, (this.pos*Player.image.width)/Player.sprites, 0, Player.image.width/Player.sprites, Player.image.height, this.x, this.y, Player.image.width/Player.sprites, Player.image.height);
+};
 
 Player.prototype.update = function (modifier) {
 	if (38 in Player.keysDown) { // Player holding up
@@ -56,30 +61,72 @@ Player.prototype.update = function (modifier) {
 	}
 
 	if (37 in Player.keysDown) { // Player holding left
- 		if((this.x - (this.speed * modifier)) >= 0)  
+ 		this.ticks++;
+ 		if((this.x - (this.speed * modifier)) >= 0) {
 			this.x -= this.speed * modifier;
-	else
-   		this.x = 0; 
+			if(this.pos - 1 >= 0 && Player.imagePerFrame < this.ticks) {
+				this.pos--;	
+				this.ticks = 0;
+			}
+		}
+		else
+		{
+   			this.x = 0; 
+			if(this.pos - 1 >= 0 && Player.imagePerFrame < this.ticks) {
+				this.pos--;
+				this.ticks = 0;
+			}
+		}
 	}
   
 	if (39 in Player.keysDown) { // Player holding right
-	   	if((this.x + (this.speed * modifier)) <= (canvas.width - Player.image.width))
+	   	this.ticks++;
+	   	if((this.x + (this.speed * modifier)) <= (canvas.width - Player.image.width/Player.sprites))
+		{
 			this.x += this.speed * modifier;
+			if(!((this.pos + 1) > (Player.sprites - 1)) && Player.imagePerFrame < this.ticks){
+				this.pos++;
+				this.ticks = 0;
+			}
+		}
 	   	else
-	   		this.x = canvas.width - Player.image.width;
+	   	{
+	   		this.x = canvas.width - Player.image.width/Player.sprites;
+	   		if(!(this.pos + 1 > Player.sprites - 1) && Player.imagePerFrame < this.ticks){
+				this.pos++;
+				this.ticks = 0;
+	   		}
+	   	}
   	}
   
 	if(32 in Player.keysPress) {
 		if(Bullet.counter < playerInstance.amo){
-			Bullet.bulletList.push(new Bullet(this.x+(Player.image.width/2)-Bullet.image.width/2, this.y, 256, 0));
+			Bullet.bulletList.push(new Bullet(this.x+((Player.image.width/Player.sprites)/2)-Bullet.image.width/2, this.y, 256, 0));
 			Bullet.counter++;
 		}
     	delete Player.keysPress[32];
 	}
 
+	if(!(37 in Player.keysDown) && !(39 in Player.keysDown))
+	{
+		this.ticks++;
+		if(this.pos < 2 && Player.imagePerFrame < this.ticks)
+		{
+			this.ticks = 0;
+			this.pos ++;
+		}
+		else
+		{
+			if(this.pos != 2 && Player.imagePerFrame < this.ticks){
+				this.pos--;
+				this.ticks = 0;
+			}
+		}
+	}
+
 	for(enemy in Enemy.enemyList)
 	{
-		if(colide(this.x, this.y, Player.image.width, Player.image.height, Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y, Enemy.image.width, Enemy.image.height)) {
+		if(colide(this.x, this.y, Player.image.width/Player.sprites, Player.image.height, Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y, Enemy.image.width, Enemy.image.height)) {
 			this.lives--;
 			new	Explosion(Enemy.enemyList[enemy].x, Enemy.enemyList[enemy].y);
 			Player.score++;
@@ -92,7 +139,7 @@ Player.prototype.update = function (modifier) {
 	{
 		if(Bullet.bulletList[bullet].enemy)
 		{
-			if(colide(this.x, this.y, Player.image.width, Player.image.height, Bullet.bulletList[bullet].x, Bullet.bulletList[bullet].y, Bullet.image2.width, Bullet.image2.height))
+			if(colide(this.x, this.y, Player.image.width/Player.sprites, Player.image.height, Bullet.bulletList[bullet].x, Bullet.bulletList[bullet].y, Bullet.image2.width, Bullet.image2.height))
 			{
 				Bullet.bulletList[bullet].destroy();
 				new	Explosion(this.x, this.y);

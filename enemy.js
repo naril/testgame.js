@@ -24,7 +24,7 @@ function Enemy () {
 		}
 	} while(repeat);
 
-	if(Enemy.enemyCounter < 6 && Enemy.enemyCounter >= 0) {
+	if(Enemy.enemyCounter < 2 && Enemy.enemyCounter >= 0) {
 		Enemy.enemyList.push(this);
 		Enemy.enemyCounter++;
 	}
